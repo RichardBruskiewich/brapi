@@ -1481,6 +1481,11 @@ function brapi_get_calls() {
  *
  * @ingroup brapi_const
  */
+
+// Some  global variables
+
+
+
 function brapi_get_data_mapping() {
   static $brapi_data_mapping;
 
@@ -1514,97 +1519,97 @@ function brapi_get_data_mapping() {
         'selector' => array(
           'type_id' => $cv_settings['Germplasm'],
         ),
-        'fields' => [
+        'fields' => array(
           // Table fields.
           'defaultDisplayName' => 'name',
           'germplasmDbId' => 'uniquename',
 
           // Aliases.
-          'accessionNumbers' => [
+          'accessionNumbers' => array(
             'alias_for' => 'accessionNumber',
-          ],
-          'commonCropName' => [
+          ),
+          'commonCropName' => array(
             // Default settings updated later.
             'alias_for' => 'commonCropNameProp',
-          ],
-          'countryOfOriginCode' => [
+          ),
+          'countryOfOriginCode' => array(
             // Default settings updated later.
             'alias_for' => 'countryOfOriginCodeProp',
-          ],
-          'genus' => [
+          ),
+          'genus' => array(
             // Default settings updated later.
             'alias_for' => 'genusProp',
-          ],
-          'germplasmDbIds' => [
+          ),
+          'germplasmDbIds' => array(
             'alias_for' => 'germplasmDbId',
-          ],
-          'germplasmGenus' => [
+          ),
+          'germplasmGenus' => array(
             'alias_for' => 'genus',
-          ],
-          'germplasmNames' => [
+          ),
+          'germplasmNames' => array(
             'alias_for' => 'germplasmName',
-          ],
-          'germplasmPUIs' => [
+          ),
+          'germplasmPUIs' => array(
             'alias_for' => 'germplasmPUI',
-          ],
-          'germplasmSpecies' => [
+          ),
+          'germplasmSpecies' => array(
             'alias_for' => 'species',
-          ],
-          'instituteCode' => [
+          ),
+          'instituteCode' => array(
             // Default settings updated later.
             'alias_for' => 'instituteCodeProp',
-          ],
-          'instituteName' => [
+          ),
+          'instituteName' => array(
             // Default settings updated later.
             'alias_for' => 'instituteNameProp',
-          ],
-          'species' => [
+          ),
+          'species' => array(
             // Default settings updated later.
             'alias_for' => 'speciesFunc',
-          ],
-          'speciesAuthority' => [
+          ),
+          'speciesAuthority' => array(
             // Default settings updated later.
             'alias_for' => 'speciesAuthorityFunc',
-          ],
-          'subtaxa' => [
+          ),
+          'subtaxa' => array(
             // Default settings updated later.
             'alias_for' => 'subtaxaFunc',
-          ],
-          'subtaxaAuthority' => [
+          ),
+          'subtaxaAuthority' => array(
             // Default settings updated later.
             'alias_for' => 'subtaxaAuthorityFunc',
-          ],
-          'taxonIds' => [
+          ),
+          'taxonIds' => array(
             'alias_for' => 'taxonId',
-          ],
+          ),
 
           // Table joins.
-          'accessionNumber' => [
+          'accessionNumber' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['accessionNumber'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'acquisitionDate' => [
+          ),
+          'acquisitionDate' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['acquisitionDate'],
-            ],
+            ),
             'field_type' => 'date',
-          ],
+          ),
           // Legacy simple cvterm access to biologicalStatusOfAccessionCode
-          'biologicalStatusOfAccessionCodeCVTerm' => [
+          'biologicalStatusOfAccessionCodeCVTerm' => array(
             'table' => 'stock_cvterm',
             'column' => 'cvterm_id',
-            'selector' => [
+            'selector' => array(
               'cvterm_id' => $cv_settings['BiologicalStatusOfAccessionCode'],
               'is_not' => FALSE,
-            ],
+            ),
             'field_type' => 'cvterm',
-          ],
+          ),
           /*
              New slightly elaborated post-processed biologicalStatusOfAccessionCode, e.g. likely the following call?
              $value = biologicalStatusOfAccessionCode('germplasm', $stock, 'biologicalStatusOfAccessionCode', 'read');
@@ -1612,17 +1617,17 @@ function brapi_get_data_mapping() {
             'biologicalStatusOfAccessionCode' => function ($data_type, $stock, $field_name, $op, $values = NULL) {
 
                 // Caching status codes to avoid unnecessary calls to CVTerm table?
-                static status_codes_cache;
+                static $status_codes_cache;
                 if (!isset($brapi_data_mapping)) {
-                    status_codes_cache =  [];
+                    $status_codes_cache = array();
                 }
 
-                // default to NULL value == empty string unlees proven otherwise
+                // default to NULL value == empty string unless proven otherwise
                 $biological_status_of_accession_code = '';
 
                 switch ($op) {
                     case NULL:
-                        $biological_status_of_accession_code = ['read' => TRUE];
+                        $biological_status_of_accession_code = array('read' => TRUE);
                         break;
 
                     case 'read':
@@ -1639,7 +1644,7 @@ function brapi_get_data_mapping() {
                             } else {
                                 $status_code_cvterm = chado_generate_var(
                                     'cvterm',
-                                    ['cvterm_id' => $status_code_cvterm_id]
+                                    array('cvterm_id' => $status_code_cvterm_id)
                                 );
                                 $status_code_name = ($status_code_cvterm ? $status_code_cvterm->name : '');
                                 $biological_status_of_accession_code = ($status_code_name ? intval(substr($status_code_name, 0, 3)) : '');
@@ -1647,7 +1652,7 @@ function brapi_get_data_mapping() {
                             }
                         } catch(Exception $e) {
                             // do nothing... null value returned?
-                            watchdog('brapi_get_field(germplasm.biologicalStatusOfAccessionCode)', $e->getMessage(), [], WATCHDOG_WARNING);
+                            watchdog('brapi_get_field(germplasm.biologicalStatusOfAccessionCode)', $e->getMessage(), array(), WATCHDOG_WARNING);
                         }
                         break;
 
@@ -1656,197 +1661,197 @@ function brapi_get_data_mapping() {
 
                 return $biological_status_of_accession_code;
             },
-          'commonCropNameOrganism' => [
+          'commonCropNameOrganism' => array(
             'table' => 'organism',
             'foreign_key' => 'organism_id',
             'object_key' => 'organism_id',
             'column' => 'common_name',
-            'selector' => [],
+            'selector' => array(),
             'field_type' => 'string',
-          ],
-          'commonCropNameProp' => [
+          ),
+          'commonCropNameProp' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['commonCropName'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'countryOfOriginCodeCVTerm' => [
+          ),
+          'countryOfOriginCodeCVTerm' => array(
             'table' => 'stock_cvterm',
             'column' => 'cvterm_id',
-            'selector' => [
+            'selector' => array(
               'cvterm_id' => $cv_settings['countryOfOriginCode'],
               'is_not' => FALSE,
-            ],
+            ),
             'field_type' => 'cvterm',
-          ],
-          'countryOfOriginCodeProp' => [
+          ),
+          'countryOfOriginCodeProp' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['countryOfOriginCode'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'donorsProp' => [
+          ),
+          'donorsProp' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['donor institute'],
-            ],
+            ),
             'field_type' => 'string',
             'return_array' => TRUE,
-          ],
-          'femaleParentStockId' => [
+          ),
+          'femaleParentStockId' => array(
             'table' => 'stock_relationship',
             'column' => 'subject_id',
             'foreign_key' => 'object_id',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['FemaleParentOf'],
-            ],
+            ),
             'field_type' => 'int',
-          ],
+          ),
           // Genus from chado.organism.
-          'genusOrganism' => [
+          'genusOrganism' => array(
             'table' => 'organism',
             'foreign_key' => 'organism_id',
             'object_key' => 'organism_id',
             'column' => 'genus',
-            'selector' => [],
+            'selector' => array(),
             'field_type' => 'string',
-          ],
-          'genusProp' => [
+          ),
+          'genusProp' => array(
             // Genus from MCPD.
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['genus'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'germplasmName' => [
+          ),
+          'germplasmName' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['germplasmName'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'germplasmPUI' => [
+          ),
+          'germplasmPUI' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['persistent unique identifier'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'instituteCodeProp' => [
+          ),
+          'instituteCodeProp' => array(
             // From MCPD cvterm 'institute code'.
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['instituteCode'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'instituteNameProp' => [
+          ),
+          'instituteNameProp' => array(
             // Note: the use of MCPD 'institute code' should be privileged
             // against the use of 'Breeding institute name'. If 'institute code'
             // is set, then this field should be left empty.
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['instituteName'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'maleParentStockId' => [
+          ),
+          'maleParentStockId' => array(
             'table' => 'stock_relationship',
             'column' => 'subject_id',
             'foreign_key' => 'object_id',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['MaleParentOf'],
-            ],
+            ),
             'field_type' => 'int',
-          ],
-          'seedSource' => [
+          ),
+          'seedSource' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['SeedSource'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'speciesAuthorityProp' => [
+          ),
+          'speciesAuthorityProp' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['speciesAuthority'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'speciesOrganism' => [
+          ),
+          'speciesOrganism' => array(
             // Species from chado.organism.
             'table' => 'organism',
             'foreign_key' => 'organism_id',
             'object_key' => 'organism_id',
             'column' => 'species',
-            'selector' => [],
+            'selector' => array(),
             'field_type' => 'string',
-          ],
-          'speciesProp' => [
+          ),
+          'speciesProp' => array(
             // Species from MCPD.
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['species'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'subtaxaAuthorityProp' => [
+          ),
+          'subtaxaAuthorityProp' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['subtaxaAuthority'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'subtaxaProp' => [
+          ),
+          'subtaxaProp' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['subtaxa'],
-            ],
+            ),
             'field_type' => 'string',
-          ],
-          'synonyms' => [
+          ),
+          'synonyms' => array(
             'table' => 'stockprop',
             'column' => 'value',
-            'selector' => [
+            'selector' => array(
               'type_id' => $cv_settings['GermplasmSynonym'],
-            ],
+            ),
             'field_type' => 'string',
             'return_array' => TRUE,
             'use_ranking' => TRUE,
-          ],
-          'typeOfGermplasmStorageCode' => [
+          ),
+          'typeOfGermplasmStorageCode' => array(
             'table' => 'stock_cvterm',
             'column' => 'cvterm_id',
-            'selector' => [
+            'selector' => array(
               'cvterm_id' => $cv_settings['TypeOfGermplasmStorageCode'],
               'is_not' => FALSE,
-            ],
+            ),
             'field_type' => 'cvterm',
             'return_array' => TRUE,
-          ],
+          ),
 
           // Function fields.
           'donors' => function ($data_type, $stock, $field_name, $op, $values = NULL) use ($cv_settings) {
             $donors = NULL;
             switch ($op) {
               case NULL:
-                $donors = ['read' => TRUE];
+                $donors = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -1865,21 +1870,21 @@ function brapi_get_data_mapping() {
                    s.stock_id = :stock_id
                   ORDER BY sp_donor.rank ASC
                 ;';
-                $filter_values = [
+                $filter_values = array(
                   ':stock_id' => $stock->stock_id,
                   ':dan' => $cv_settings['donor accession number'],
                   ':donor' => $cv_settings['donor institute'],
                   ':dpui' => $cv_settings['DonorGermplasmPUI'],
-                ];
+                );
                 $prevloc_result = chado_query($sql_query, $filter_values);
                 if ($prevloc_result) {
-                  $donors = [];
+                  $donors = array();
                   while ($prevloc = $prevloc_result->fetchAssoc()) {
-                    $donors[$prevloc['rank']] = [
+                    $donors[$prevloc['rank']] = array(
                       'donorAccessionNumber' => $prevloc['donorAccessionNumber'],
                       'donorInstituteCode' => $prevloc['donorInstituteCode'],
                       'germplasmPUI' => $prevloc['donorGermplasmPUI'],
-                    ];
+                    );
                   }
                 }
                 break;
@@ -1893,7 +1898,7 @@ function brapi_get_data_mapping() {
             $germplasm_pui = '';
             switch ($op) {
               case NULL:
-                $germplasm_pui = ['read' => TRUE];
+                $germplasm_pui = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -1911,7 +1916,7 @@ function brapi_get_data_mapping() {
             $institute_code_stock_collection = NULL;
             switch ($op) {
               case NULL:
-                $institute_code_stock_collection = ['read' => TRUE];
+                $institute_code_stock_collection = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -1931,7 +1936,7 @@ function brapi_get_data_mapping() {
             $institute_name_stock_collection = NULL;
             switch ($op) {
               case NULL:
-                $institute_name_stock_collection = ['read' => TRUE];
+                $institute_name_stock_collection = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -1950,7 +1955,7 @@ function brapi_get_data_mapping() {
             $parent1_db_id = '';
             switch ($op) {
               case NULL:
-                $parent1_db_id = ['read' => TRUE];
+                $parent1_db_id = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -1961,7 +1966,7 @@ function brapi_get_data_mapping() {
                 );
                 $parent = chado_generate_var(
                   'stock',
-                  ['stock_id' => $parent_stock_id]
+                  array('stock_id' => $parent_stock_id)
                 );
                 $parent1_db_id = ($parent ? $parent->uniquename : '');
 
@@ -1973,7 +1978,7 @@ function brapi_get_data_mapping() {
             $parent2_db_id = '';
             switch ($op) {
               case NULL:
-                $parent2_db_id = ['read' => TRUE];
+                $parent2_db_id = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -1984,7 +1989,7 @@ function brapi_get_data_mapping() {
                 );
                 $parent = chado_generate_var(
                   'stock',
-                  ['stock_id' => $parent_stock_id]
+                  array('stock_id' => $parent_stock_id)
                 );
                 $parent2_db_id = ($parent ? $parent->uniquename : '');
                 break;
@@ -1998,7 +2003,7 @@ function brapi_get_data_mapping() {
             $pedigree = '';
             switch ($op) {
               case NULL:
-                $pedigree = ['read' => TRUE];
+                $pedigree = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -2032,7 +2037,7 @@ function brapi_get_data_mapping() {
             $taxon_id = NULL;
             switch ($op) {
               case NULL:
-                $taxon_id = ['read' => TRUE];
+                $taxon_id = array('read' => TRUE);
                 break;
 
               case 'read':
@@ -2044,7 +2049,7 @@ function brapi_get_data_mapping() {
             }
             return $taxon_id;
           },
-        ],
+        ),
       ),
       'sample' => array(
         'table' => 'stock',

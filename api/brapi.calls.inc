@@ -2325,7 +2325,8 @@ function brapi_v1_read_locations_11_json($geolocation) {
   $geolocation_data = array();
 
   $geolocation_data = brapi_get_locations_details_11($geolocation);
-  $data = array('result' => array($geolocation_data));
+  // Issue #29 fix: remove 'array' wrapping to return raw 'master' location object
+  $data = array('result' => $geolocation_data);
   brapi_aggregate_call($data, $metadata, $debug_data);
 
   return array(
