@@ -2694,60 +2694,65 @@ function brapi_get_data_mapping() {
         // ),
         // @endcode
       ),
-      'variable'     => array(
+      'variable'  => array(
         'table' => 'cvterm',
         'identifier' => 'cvterm_id',
         'accession' => 'name',
         'fields' => array(
-          // Table fields.
-          'name' => 'name',
-          'objective' => 'definition',
-          'variableDbId' => 'cvterm_id',
+              // Table fields.
+              'name' => 'name',
+              'objective' => 'definition',
+              'variableDbId' => 'cvterm_id',
 
-          // Aliases.
-          'abbreviation' => array(
-            'alias_for' => 'name',
-          ),
-          'observationVariableDbId' => array(
-            'alias_for' => 'variableDbId',
-          ),
+              // Aliases.
+              'abbreviation' => array(
+                'alias_for' => 'name',
+              ),
+              'observationVariableDbId' => array(
+                'alias_for' => 'variableDbId',
+              ),
 
-          // Table joins.
-          // Function fields.
-          'leadPerson' => function ($data_type, $cvterm, $field_name, $op, $values = NULL) use ($cv_settings) {
-            $lead_contact = NULL;
-            switch ($op) {
-              case NULL:
-                $lead_contact = array('read' => TRUE);
-                break;
+              // Table joins.
+              // Function fields.
+              /*
+               * RMB: fixing /variables endpoint tripal/brapi issue #34:
+               * BrAPI data model uses 'scientist' not 'leadPerson' field
+               *
+               */
+              'scientist' => function ($data_type, $cvterm, $field_name, $op, $values = NULL) use ($cv_settings) {
+                $lead_contact = NULL;
+                switch ($op) {
+                  case NULL:
+                    $lead_contact = array('read' => TRUE);
+                    break;
 
-              case 'read':
-                $sql_query = '
-                  SELECT c.name
-                  FROM {contact} c
-                    JOIN {project_contact pc USING (contact_id)
-                  WHERE
-                    pc.project_id = :project_id
-                    AND c.type_id = :lead_person_type_id
-                ;';
-                $filter_values = array(
-                  ':project_id' => $project->project_id,
-                  ':lead_person_type_id' => $cv_settings['LeadPerson'],
-                );
-                $contact_result = chado_query($sql_query, $filter_values);
-                if ($contact_result) {
-                  $contact = $contact_result->fetchAssoc();
-                  $lead_contact = $contact['name'];
+                  case 'read':
+                    $sql_query = '
+                      SELECT c.name
+                      FROM {contact} c
+                        JOIN {project_contact pc USING (contact_id)
+                      WHERE
+                        pc.project_id = :project_id
+                        AND c.type_id = :lead_person_type_id
+                    ;';
+                    $filter_values = array(
+                      ':project_id' => $project->project_id,
+                      ':lead_person_type_id' => $cv_settings['LeadPerson'],
+                    );
+                    $contact_result = chado_query($sql_query, $filter_values);
+                    if ($contact_result) {
+                      $contact = $contact_result->fetchAssoc();
+                      $lead_contact = $contact['name'];
+                    }
+                    else {
+                      $lead_contact = NULL;
+                    }
+                    break;
+
+                  default:
                 }
-                else {
-                  $lead_contact = NULL;
-                }
-                break;
-
-              default:
-            }
-            return $lead_contact;
-          },
+                return $lead_contact;
+              },
         ),
       ),
       'map'          => array(
